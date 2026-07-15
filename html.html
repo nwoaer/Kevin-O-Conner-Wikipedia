@@ -1,0 +1,2605 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kevin O'Conner - Wikipedia</title>
+    <style>
+        /* ============================================================
+                   RESET & VARIABEL
+                   ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --w-bg: #f6f6f6;
+            --w-border: #c8ccd1;
+            --w-light-bg: #f8f9fa;
+            --w-blue: #0645ad;
+            --w-text: #202122;
+            --w-gray: #54595d;
+            --w-shadow: rgba(0, 0, 0, 0.06);
+            --w-hover-blue: #eaf3ff;
+            --w-sidebar-width: 220px;
+            --w-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --w-green: #2d8a4e;
+            --w-red: #c0392b;
+            --w-orange: #e67e22;
+        }
+
+        body {
+            background: var(--w-bg);
+            font-family: 'Segoe UI', 'Linux Libertine', 'Georgia', 'Times New Roman', serif;
+            color: var(--w-text);
+            line-height: 1.65;
+            padding: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        a {
+            color: var(--w-blue);
+            text-decoration: none;
+            transition: color 0.2s ease;
+            cursor: pointer;
+        }
+        a:hover {
+            text-decoration: underline;
+            color: #0b4fa8;
+        }
+
+        /* ============================================================
+                   ANIMASI LOADING
+                   ============================================================ */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+
+        .loader-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-spinner {
+            width: 52px;
+            height: 52px;
+            border: 3.5px solid #eaecf0;
+            border-top: 3.5px solid var(--w-blue);
+            border-radius: 50%;
+            animation: spin 0.9s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
+            margin-bottom: 1.8rem;
+            position: relative;
+        }
+
+        .loader-spinner::after {
+            content: '';
+            position: absolute;
+            top: -3.5px;
+            left: -3.5px;
+            right: -3.5px;
+            bottom: -3.5px;
+            border-radius: 50%;
+            border: 3.5px solid transparent;
+            border-bottom: 3.5px solid rgba(6, 69, 173, 0.15);
+            animation: spin 1.8s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite reverse;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loader-text {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 1.2rem;
+            color: var(--w-gray);
+            letter-spacing: 0.3px;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease 0.3s forwards;
+        }
+
+        .loader-text strong {
+            font-weight: 700;
+            color: #000;
+        }
+
+        .loader-sub {
+            font-size: 0.8rem;
+            color: #a2a9b1;
+            margin-top: 0.6rem;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease 0.5s forwards;
+        }
+
+        .loader-progress {
+            width: 140px;
+            height: 2px;
+            background: #eaecf0;
+            border-radius: 2px;
+            margin-top: 1.5rem;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease 0.7s forwards;
+        }
+
+        .loader-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--w-blue), #4a8bc2);
+            border-radius: 2px;
+            animation: progressLoad 1.2s ease 0.7s forwards;
+        }
+
+        @keyframes progressLoad {
+            0% {
+                width: 0%;
+            }
+            30% {
+                width: 25%;
+            }
+            60% {
+                width: 65%;
+            }
+            100% {
+                width: 100%;
+            }
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================================
+                   LAYOUT UTAMA
+                   ============================================================ */
+        .wiki-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0.8rem 1.2rem 2rem 1.2rem;
+            display: flex;
+            gap: 2rem;
+            background: var(--w-bg);
+            opacity: 0;
+            animation: fadeInContent 1s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
+            position: relative;
+        }
+
+        @keyframes fadeInContent {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================================
+                   SIDEBAR KIRI
+                   ============================================================ */
+        .wiki-sidebar {
+            flex: 0 0 var(--w-sidebar-width);
+            min-width: 180px;
+            font-size: 0.85rem;
+            padding-top: 0.2rem;
+            opacity: 0;
+            animation: slideInLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
+            position: sticky;
+            top: 1rem;
+            align-self: flex-start;
+            max-height: calc(100vh - 2rem);
+            overflow-y: auto;
+        }
+
+        .wiki-sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .wiki-sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .wiki-sidebar::-webkit-scrollbar-thumb {
+            background: #c8ccd1;
+            border-radius: 2px;
+        }
+
+        @keyframes slideInLeft {
+            0% {
+                opacity: 0;
+                transform: translateX(-28px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .wiki-sidebar .logo-area {
+            text-align: center;
+            margin-bottom: 1.4rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--w-border);
+        }
+
+        .wiki-sidebar .logo-area .wiki-word {
+            font-family: 'Linux Libertine', 'Georgia', serif;
+            font-size: 2.1rem;
+            font-weight: 400;
+            letter-spacing: -0.5px;
+            color: #000;
+        }
+
+        .wiki-sidebar .logo-area .wiki-word span {
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: 300;
+            font-size: 1.1rem;
+            letter-spacing: 0;
+        }
+
+        .wiki-sidebar .logo-area .sub-logo {
+            font-size: 0.72rem;
+            color: var(--w-gray);
+            margin-top: -2px;
+            letter-spacing: 0.3px;
+        }
+
+        .wiki-sidebar nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem 0;
+        }
+
+        .wiki-sidebar nav ul li {
+            padding: 0.25rem 0 0.25rem 1rem;
+            border-left: 3px solid transparent;
+            transition: background 0.15s ease, border-color 0.15s ease;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .wiki-sidebar nav ul li:hover {
+            border-left-color: var(--w-blue);
+            background: var(--w-hover-blue);
+        }
+
+        .wiki-sidebar nav ul li a {
+            display: block;
+            color: var(--w-blue);
+            transition: color 0.15s ease;
+        }
+
+        .wiki-sidebar nav ul li a:hover {
+            text-decoration: none;
+            color: #0b4fa8;
+        }
+
+        .wiki-sidebar .sidebar-section-title {
+            font-weight: 600;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            color: var(--w-gray);
+            letter-spacing: 0.8px;
+            padding: 0.6rem 0 0.25rem 0.5rem;
+            border-bottom: 1px solid #eaecf0;
+            margin-bottom: 0.2rem;
+        }
+
+        /* ============================================================
+                   KONTEN UTAMA
+                   ============================================================ */
+        .wiki-main {
+            flex: 1;
+            min-width: 0;
+            background: #ffffff;
+            padding: 1.8rem 2.2rem 2.5rem 2.2rem;
+            box-shadow: 0 1px 4px var(--w-shadow);
+            border-radius: 2px;
+            opacity: 0;
+            animation: slideInRight 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .wiki-main.page-transition {
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        @keyframes slideInRight {
+            0% {
+                opacity: 0;
+                transform: translateX(24px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* ============================================================
+                   HEADER HALAMAN
+                   ============================================================ */
+        .page-header {
+            border-bottom: 1px solid #a2a9b1;
+            padding-bottom: 0.3rem;
+            margin-bottom: 1.2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .page-header h1 {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-weight: 400;
+            font-size: 2.5rem;
+            letter-spacing: -0.5px;
+            color: #000;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .page-header .header-lang {
+            font-size: 0.8rem;
+            color: var(--w-gray);
+            font-weight: 400;
+        }
+
+        .page-header .header-lang a {
+            color: var(--w-blue);
+        }
+
+        /* ============================================================
+                   TAB ACTION - SEMUA BERFUNGSI
+                   ============================================================ */
+        .action-tabs {
+            font-size: 0.8rem;
+            border-bottom: 1px solid var(--w-border);
+            padding-bottom: 0.3rem;
+            margin-bottom: 1.2rem;
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .action-tabs a {
+            color: var(--w-blue);
+            padding: 0.2rem 0.5rem;
+            transition: all 0.2s ease;
+            border-radius: 2px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            font-size: 0.82rem;
+        }
+
+        .action-tabs a.active {
+            background: #ffffff;
+            border: 1px solid var(--w-border);
+            border-bottom: 2px solid #ffffff;
+            padding: 0.2rem 0.7rem;
+            margin-bottom: -1px;
+            font-weight: 600;
+            color: #000;
+            text-decoration: none;
+        }
+
+        .action-tabs a:not(.active):hover {
+            background: var(--w-hover-blue);
+            text-decoration: none;
+            border-color: #a2a9b1;
+        }
+
+        .action-tabs .tab-badge {
+            font-size: 0.65rem;
+            background: #eaecf0;
+            padding: 0.05rem 0.5rem;
+            border-radius: 10px;
+            color: var(--w-gray);
+            margin-left: 0.2rem;
+        }
+
+        .action-tabs .lock-icon {
+            margin-left: auto;
+            font-size: 0.7rem;
+            color: var(--w-gray);
+            letter-spacing: 0.5px;
+        }
+
+        /* ============================================================
+                   TAB CONTENT - KONTEN DINAMIS
+                   ============================================================ */
+        .tab-content {
+            display: none;
+            animation: fadeTab 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeTab {
+            0% {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================================
+                   PEMBICARAAN TAB
+                   ============================================================ */
+        .discussion-list {
+            margin: 0.5rem 0 1rem 0;
+        }
+
+        .discussion-item {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #eaecf0;
+            transition: background 0.2s ease;
+        }
+
+        .discussion-item:hover {
+            background: var(--w-hover-blue);
+        }
+
+        .discussion-item .discussion-title {
+            font-weight: 600;
+            color: var(--w-blue);
+            cursor: pointer;
+        }
+
+        .discussion-item .discussion-meta {
+            font-size: 0.8rem;
+            color: var(--w-gray);
+            margin-top: 0.2rem;
+        }
+
+        .discussion-item .discussion-meta span {
+            margin-right: 1rem;
+        }
+
+        .discussion-form {
+            margin-top: 1.5rem;
+            padding: 1.2rem 1.5rem;
+            background: var(--w-light-bg);
+            border: 1px solid var(--w-border);
+            border-radius: 4px;
+        }
+
+        .discussion-form label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .discussion-form input,
+        .discussion-form textarea {
+            width: 100%;
+            padding: 0.5rem 0.8rem;
+            border: 1px solid var(--w-border);
+            border-radius: 4px;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 0.9rem;
+            transition: border-color 0.2s ease;
+            margin-bottom: 0.8rem;
+        }
+
+        .discussion-form input:focus,
+        .discussion-form textarea:focus {
+            outline: none;
+            border-color: var(--w-blue);
+            box-shadow: 0 0 0 2px rgba(6, 69, 173, 0.1);
+        }
+
+        .discussion-form textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 0.4rem 1.2rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--w-blue);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #0b4fa8;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(6, 69, 173, 0.2);
+        }
+
+        .btn-success {
+            background: var(--w-green);
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background: #1f7a3e;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(45, 138, 78, 0.2);
+        }
+
+        .btn-danger {
+            background: var(--w-red);
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background: #a93226;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(192, 57, 43, 0.2);
+        }
+
+        /* ============================================================
+                   BACA TAB
+                   ============================================================ */
+        .read-mode-indicator {
+            background: var(--w-light-bg);
+            border: 1px solid var(--w-border);
+            padding: 0.6rem 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .read-mode-indicator .read-stats {
+            font-size: 0.85rem;
+            color: var(--w-gray);
+        }
+
+        .read-mode-indicator .read-stats strong {
+            color: var(--w-text);
+        }
+
+        .font-size-controls {
+            display: flex;
+            gap: 0.3rem;
+            align-items: center;
+        }
+
+        .font-size-controls button {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--w-border);
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .font-size-controls button:hover {
+            background: var(--w-hover-blue);
+            border-color: var(--w-blue);
+        }
+
+        .font-size-controls .font-size-display {
+            font-size: 0.8rem;
+            color: var(--w-gray);
+            min-width: 40px;
+            text-align: center;
+        }
+
+        /* ============================================================
+                   SUNTING TAB
+                   ============================================================ */
+        .edit-area {
+            margin: 0.5rem 0 1rem 0;
+        }
+
+        .edit-area textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--w-border);
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            resize: vertical;
+        }
+
+        .edit-area textarea:focus {
+            outline: none;
+            border-color: var(--w-blue);
+            box-shadow: 0 0 0 2px rgba(6, 69, 173, 0.08);
+        }
+
+        .edit-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.8rem;
+            padding: 0.5rem 0.8rem;
+            background: var(--w-light-bg);
+            border: 1px solid var(--w-border);
+            border-radius: 4px;
+        }
+
+        .edit-toolbar button {
+            padding: 0.2rem 0.7rem;
+            border: 1px solid var(--w-border);
+            background: #fff;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.15s ease;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .edit-toolbar button:hover {
+            background: var(--w-hover-blue);
+            border-color: var(--w-blue);
+        }
+
+        .edit-preview {
+            display: none;
+            padding: 1rem 1.2rem;
+            background: var(--w-light-bg);
+            border: 1px solid var(--w-border);
+            border-radius: 4px;
+            margin-top: 0.8rem;
+        }
+
+        .edit-preview.active {
+            display: block;
+            animation: fadeTab 0.3s ease;
+        }
+
+        .edit-preview .preview-content {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.8;
+        }
+
+        .edit-preview .preview-content h2 {
+            font-size: 1.5rem;
+            border-bottom: 1px solid #a2a9b1;
+            padding-bottom: 0.2rem;
+            margin: 1rem 0 0.5rem 0;
+        }
+
+        /* ============================================================
+                   RIWAYAT TAB
+                   ============================================================ */
+        .history-list {
+            margin: 0.5rem 0 1rem 0;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0.8rem;
+            border-bottom: 1px solid #eaecf0;
+            gap: 1rem;
+            transition: background 0.15s ease;
+        }
+
+        .history-item:hover {
+            background: var(--w-hover-blue);
+        }
+
+        .history-item .history-version {
+            font-weight: 600;
+            color: var(--w-gray);
+            min-width: 60px;
+            font-size: 0.82rem;
+        }
+
+        .history-item .history-date {
+            font-size: 0.82rem;
+            color: var(--w-gray);
+            min-width: 120px;
+        }
+
+        .history-item .history-user {
+            font-size: 0.82rem;
+            color: var(--w-blue);
+            min-width: 100px;
+        }
+
+        .history-item .history-summary {
+            font-size: 0.82rem;
+            color: var(--w-text);
+            flex: 1;
+        }
+
+        .history-item .history-size {
+            font-size: 0.75rem;
+            color: var(--w-gray);
+            background: var(--w-light-bg);
+            padding: 0.05rem 0.5rem;
+            border-radius: 10px;
+        }
+
+        .history-item .history-action {
+            font-size: 0.75rem;
+        }
+
+        .history-item .history-action a {
+            color: var(--w-blue);
+            margin: 0 0.2rem;
+        }
+
+        /* ============================================================
+                   INFOBOX
+                   ============================================================ */
+        .infobox {
+            float: right;
+            width: 280px;
+            background: var(--w-light-bg);
+            border: 1px solid var(--w-border);
+            padding: 0.6rem 1rem 0.8rem 1rem;
+            margin: 0 0 1.2rem 1.8rem;
+            font-size: 0.9rem;
+            border-radius: 2px;
+            clear: right;
+            opacity: 0;
+            animation: fadeInBox 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.9s forwards;
+        }
+
+        @keyframes fadeInBox {
+            0% {
+                opacity: 0;
+                transform: scale(0.96) translateY(6px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .infobox h3 {
+            font-weight: 600;
+            font-size: 1.15rem;
+            border-bottom: 1px solid var(--w-border);
+            padding-bottom: 0.3rem;
+            margin: -0.6rem -1rem 0.6rem -1rem;
+            padding: 0.4rem 0 0.4rem 0;
+            text-align: center;
+            background: #eaecf0;
+            font-family: 'Georgia', serif;
+            font-weight: 400;
+        }
+
+        .infobox table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .infobox td {
+            padding: 0.3rem 0.1rem;
+            vertical-align: top;
+            border-bottom: 1px solid transparent;
+        }
+
+        .infobox tr:last-child td {
+            border-bottom: none;
+        }
+
+        .infobox .label {
+            font-weight: 600;
+            width: 38%;
+            color: #222;
+            padding-right: 0.4rem;
+        }
+
+        .infobox .value {
+            width: 62%;
+        }
+
+        .infobox .value .id-ff {
+            background: var(--w-hover-blue);
+            padding: 0.1rem 0.6rem;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--w-blue);
+            border: 1px solid #a2a9b1;
+            transition: all 0.2s ease;
+            display: inline-block;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+        }
+
+        .infobox .value .id-ff:hover {
+            background: #d4e4ff;
+            transform: scale(1.03);
+            box-shadow: 0 1px 4px rgba(6, 69, 173, 0.12);
+        }
+
+        /* ============================================================
+                   ISI ARTIKEL
+                   ============================================================ */
+        .article-content p {
+            margin-bottom: 1rem;
+        }
+
+        .article-content h2 {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-weight: 400;
+            font-size: 1.8rem;
+            border-bottom: 1px solid #a2a9b1;
+            padding-bottom: 0.15rem;
+            margin: 1.8rem 0 0.8rem 0;
+        }
+
+        .article-content h3 {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin: 1.4rem 0 0.3rem 0;
+        }
+
+        .article-content ul,
+        .article-content ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .article-content li {
+            margin-bottom: 0.25rem;
+        }
+
+        .article-content .quote-box {
+            background: var(--w-light-bg);
+            border-left: 4px solid #a2a9b1;
+            padding: 0.6rem 1.5rem;
+            margin: 1.2rem 0;
+            font-style: italic;
+            color: var(--w-text);
+            transition: background 0.2s ease;
+        }
+
+        .article-content .quote-box:hover {
+            background: #f0f2f5;
+        }
+
+        .article-content .quote-box .source {
+            font-style: normal;
+            font-size: 0.9rem;
+            color: var(--w-gray);
+            margin-top: 0.3rem;
+        }
+
+        .article-content .quote-box .source::before {
+            content: "\2014 ";
+        }
+
+        .inline-id {
+            background: var(--w-hover-blue);
+            padding: 0.1rem 0.6rem;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            border: 1px solid #a2a9b1;
+            transition: all 0.2s ease;
+            display: inline-block;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+        }
+
+        .inline-id:hover {
+            background: #d4e4ff;
+            transform: scale(1.03);
+            box-shadow: 0 1px 4px rgba(6, 69, 173, 0.1);
+        }
+
+        /* Tabel statistik */
+        .stat-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin: 0.6rem 0 1.2rem 0;
+            transition: box-shadow 0.2s ease;
+        }
+
+        .stat-table:hover {
+            box-shadow: 0 1px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-table th {
+            background: #eaecf0;
+            padding: 0.4rem 0.8rem;
+            border: 1px solid var(--w-border);
+            text-align: left;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .stat-table td {
+            padding: 0.4rem 0.8rem;
+            border: 1px solid var(--w-border);
+        }
+
+        .stat-table tr:nth-child(even) {
+            background: var(--w-light-bg);
+        }
+
+        .stat-table tr:hover td {
+            background: var(--w-hover-blue);
+        }
+
+        /* ============================================================
+                   REFERENSI / FOOTER
+                   ============================================================ */
+        .ref-footer {
+            margin-top: 2.8rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid #eaecf0;
+            font-size: 0.85rem;
+            color: var(--w-gray);
+        }
+
+        .ref-footer .ref-header {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 2rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .ref-footer .ref-header .badge {
+            font-size: 0.75rem;
+            color: var(--w-gray);
+            background: var(--w-light-bg);
+            padding: 0.1rem 0.6rem;
+            border-radius: 12px;
+            border: 1px solid var(--w-border);
+            display: inline-block;
+        }
+
+        .ref-footer .ref-list {
+            list-style: none;
+            padding: 0;
+            margin: 0.5rem 0 0 0;
+        }
+
+        .ref-footer .ref-list li {
+            padding: 0.15rem 0;
+            font-size: 0.82rem;
+        }
+
+        .ref-footer .ref-list li::before {
+            content: "\25B8 ";
+            color: var(--w-gray);
+        }
+
+        .ref-footer .ref-list li a {
+            color: var(--w-blue);
+            cursor: pointer;
+        }
+
+        .ref-footer .footer-license {
+            margin-top: 0.8rem;
+            font-size: 0.75rem;
+            color: #72777d;
+            line-height: 1.5;
+        }
+
+        .ref-footer .footer-license p {
+            margin-bottom: 0.1rem;
+        }
+
+        /* ============================================================
+                   MODAL
+                   ============================================================ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes modalFadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: #ffffff;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 2rem 2.5rem;
+            border-radius: 4px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            animation: modalSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        @keyframes modalSlideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.96);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-content .modal-close {
+            position: absolute;
+            top: 0.8rem;
+            right: 1.2rem;
+            font-size: 1.8rem;
+            color: var(--w-gray);
+            cursor: pointer;
+            transition: color 0.2s ease;
+            background: none;
+            border: none;
+            line-height: 1;
+        }
+
+        .modal-content .modal-close:hover {
+            color: #000;
+        }
+
+        .modal-content h2 {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-weight: 400;
+            font-size: 1.8rem;
+            border-bottom: 1px solid #a2a9b1;
+            padding-bottom: 0.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-content p {
+            margin-bottom: 0.8rem;
+            line-height: 1.7;
+        }
+
+        .modal-content .modal-meta {
+            font-size: 0.8rem;
+            color: var(--w-gray);
+            margin-top: 1.2rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid #eaecf0;
+        }
+
+        /* ============================================================
+                   TOAST
+                   ============================================================ */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #202122;
+            color: #ffffff;
+            padding: 0.6rem 1.8rem;
+            border-radius: 24px;
+            font-size: 0.85rem;
+            font-family: 'Segoe UI', sans-serif;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 99999;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ============================================================
+                   RESPONSIF
+                   ============================================================ */
+        @media (max-width: 900px) {
+            .wiki-container {
+                flex-direction: column;
+                padding: 0.5rem;
+                gap: 0.8rem;
+            }
+
+            .wiki-sidebar {
+                flex: 1 1 auto;
+                display: none;
+                position: static;
+                max-height: none;
+            }
+
+            .wiki-sidebar.mobile-open {
+                display: block;
+            }
+
+            .wiki-main {
+                padding: 1.2rem 1rem;
+                border-radius: 2px;
+            }
+
+            .infobox {
+                float: none;
+                width: 100%;
+                margin: 0 0 1.2rem 0;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.2rem;
+            }
+
+            .loader-text {
+                font-size: 1rem;
+                text-align: center;
+                padding: 0 1rem;
+            }
+
+            .action-tabs {
+                gap: 0.3rem;
+                font-size: 0.72rem;
+            }
+
+            .action-tabs a {
+                padding: 0.15rem 0.35rem;
+            }
+
+            .action-tabs .lock-icon {
+                margin-left: 0;
+                width: 100%;
+                text-align: right;
+                font-size: 0.65rem;
+            }
+
+            .stat-table {
+                font-size: 0.8rem;
+            }
+
+            .stat-table th,
+            .stat-table td {
+                padding: 0.3rem 0.5rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+                width: 95%;
+                max-height: 85vh;
+            }
+
+            .modal-content h2 {
+                font-size: 1.4rem;
+            }
+
+            .mobile-menu-toggle {
+                display: flex !important;
+            }
+
+            .history-item {
+                flex-wrap: wrap;
+                gap: 0.2rem 0.8rem;
+            }
+
+            .history-item .history-date {
+                min-width: auto;
+            }
+
+            .history-item .history-user {
+                min-width: auto;
+            }
+
+            .edit-area textarea {
+                min-height: 200px;
+            }
+
+            .discussion-form {
+                padding: 1rem;
+            }
+
+            .read-mode-indicator {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+
+            .font-size-controls {
+                justify-content: flex-start;
+            }
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            background: var(--w-light-bg);
+            border: 1px solid var(--w-border);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: var(--w-text);
+            cursor: pointer;
+            transition: background 0.2s ease;
+            margin-bottom: 0.8rem;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .mobile-menu-toggle:hover {
+            background: #eaecf0;
+        }
+
+        @media (min-width: 901px) {
+            .wiki-sidebar {
+                display: block !important;
+            }
+            .mobile-menu-toggle {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 1100px) and (min-width: 901px) {
+            :root {
+                --w-sidebar-width: 180px;
+            }
+            .wiki-sidebar {
+                font-size: 0.78rem;
+            }
+            .wiki-main {
+                padding: 1.5rem 1.5rem 2rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .wiki-main {
+                padding: 0.8rem 0.8rem 1.5rem 0.8rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.6rem;
+            }
+
+            .infobox {
+                font-size: 0.82rem;
+                padding: 0.4rem 0.8rem 0.6rem 0.8rem;
+            }
+
+            .infobox h3 {
+                font-size: 1rem;
+            }
+
+            .article-content h2 {
+                font-size: 1.4rem;
+            }
+
+            .loader-spinner {
+                width: 40px;
+                height: 40px;
+                border-width: 3px;
+            }
+
+            .loader-text {
+                font-size: 0.9rem;
+            }
+
+            .modal-content {
+                padding: 1.2rem;
+            }
+
+            .toast {
+                font-size: 0.78rem;
+                padding: 0.5rem 1.2rem;
+                bottom: 1.5rem;
+                width: 90%;
+                text-align: center;
+            }
+
+            .action-tabs a .tab-badge {
+                display: none;
+            }
+
+            .discussion-item {
+                padding: 0.5rem 0.6rem;
+            }
+
+            .history-item {
+                padding: 0.4rem 0.5rem;
+                font-size: 0.78rem;
+            }
+        }
+
+        /* ============================================================
+                   EFEK HALUS
+                   ============================================================ */
+        .wiki-main,
+        .infobox,
+        .stat-table,
+        .quote-box {
+            transition: box-shadow 0.25s ease;
+        }
+
+        .wiki-main:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+        }
+
+        .infobox:hover {
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Notifikasi perubahan */
+        .change-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--w-green);
+            border-radius: 50%;
+            margin-right: 0.3rem;
+            animation: pulse 1.5s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .edit-success {
+            background: #d4edda;
+            border-color: var(--w-green);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            display: none;
+            color: #155724;
+        }
+
+        .edit-success.show {
+            display: block;
+            animation: fadeTab 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    OVERLAY LOADING
+    ============================================================ -->
+    <div class="loader-overlay" id="loaderOverlay">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">
+            <strong>Wikipedia</strong> &middot; Ensiklopedia bebas
+        </div>
+        <div class="loader-sub">Memuat artikel</div>
+        <div class="loader-progress">
+            <div class="loader-progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    TOAST NOTIFICATION
+    ============================================================ -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================================
+    MODAL
+    ============================================================ -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content" id="modalContent">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    KONTEN UTAMA
+    ============================================================ -->
+    <div class="wiki-container">
+
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="wiki-sidebar" id="wikiSidebar">
+            <div class="logo-area">
+                <div class="wiki-word">Wiki<span>pedia</span></div>
+                <div class="sub-logo">Ensiklopedia bebas</div>
+            </div>
+
+            <nav>
+                <div class="sidebar-section-title">Navigasi</div>
+                <ul>
+                    <li><a href="#" data-page="home" class="nav-link">Halaman utama</a></li>
+                    <li><a href="#" data-page="changes" class="nav-link">Perubahan terbaru</a></li>
+                    <li><a href="#" data-page="featured" class="nav-link">Artikel pilihan</a></li>
+                    <li><a href="#" data-page="community" class="nav-link">Komunitas</a></li>
+                    <li><a href="#" data-page="kopi" class="nav-link">Warung Kopi</a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Pencarian</div>
+                <ul>
+                    <li><a href="#" data-page="search" class="nav-link">Cari</a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Perangkat</div>
+                <ul>
+                    <li><a href="#" data-page="backlinks" class="nav-link">Pranala balik</a></li>
+                    <li><a href="#" data-page="related" class="nav-link">Perubahan terkait</a></li>
+                    <li><a href="#" data-page="special" class="nav-link">Halaman istimewa</a></li>
+                    <li><a href="#" data-page="print" class="nav-link">Versi cetak</a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Bahasa</div>
+                <ul>
+                    <li><a href="#" data-page="id" class="nav-link">Bahasa Indonesia</a></li>
+                    <li><a href="#" data-page="en" class="nav-link">English</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- ===== KONTEN UTAMA ===== -->
+        <main class="wiki-main" id="wikiMain">
+
+            <!-- MOBILE MENU -->
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                &#9776; Menu
+            </button>
+
+            <!-- TAB ACTION -->
+            <div class="action-tabs">
+                <a href="#" class="active" data-tab="page">Halaman</a>
+                <a href="#" data-tab="talk" class="tab-trigger">Pembicaraan <span class="tab-badge">3</span></a>
+                <a href="#" data-tab="read" class="tab-trigger">Baca</a>
+                <a href="#" data-tab="edit" class="tab-trigger">Sunting</a>
+                <a href="#" data-tab="history" class="tab-trigger">Lihat riwayat <span class="tab-badge">8</span></a>
+                <span class="lock-icon">Terkunci</span>
+            </div>
+
+            <!-- HEADER -->
+            <header class="page-header">
+                <h1 id="pageTitle">Kevin O'Conner</h1>
+                <span class="header-lang"><a href="#" data-page="id" class="nav-link">Bahasa Indonesia</a> &middot; <a href="#" data-page="en" class="nav-link">English</a></span>
+            </header>
+
+            <!-- ============================================================
+            TAB: HALAMAN (PAGE) - KONTEN UTAMA
+            ============================================================ -->
+            <div class="tab-content active" id="tab-page">
+
+                <div class="clearfix">
+
+                    <!-- INFOBOX -->
+                    <aside class="infobox" id="infobox">
+                        <h3>Kevin O'Conner</h3>
+                        <table>
+                            <tr>
+                                <td class="label">Nama lengkap</td>
+                                <td class="value">Kevin O'Conner</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Julukan</td>
+                                <td class="value">Elit Cees &middot; Kapten FF</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Tempat tinggal</td>
+                                <td class="value">Marabahan, Barito Kuala<br />Kalimantan Selatan</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Pendidikan</td>
+                                <td class="value">SMKN 1 Marabahan<br /><span style="font-size:0.85rem;">Jurusan TJKT</span></td>
+                            </tr>
+                            <tr>
+                                <td class="label">Pekerjaan</td>
+                                <td class="value">Pelajar &middot; Gamer</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Dikenal karena</td>
+                                <td class="value">Elit Cees &amp; Shot-caller Free Fire</td>
+                            </tr>
+                            <tr>
+                                <td class="label">ID Free Fire</td>
+                                <td class="value"><span class="id-ff" id="ffId">1133905337</span></td>
+                            </tr>
+                            <tr>
+                                <td class="label">Media sosial</td>
+                                <td class="value"><a href="#" data-page="tiktok" class="nav-link">@kevinnnnn333</a> (TikTok)</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Server</td>
+                                <td class="value">Indonesia</td>
+                            </tr>
+                        </table>
+                    </aside>
+
+                    <!-- ARTIKEL -->
+                    <div class="article-content" id="articleContent">
+
+                        <p><b>Kevin O'Conner</b> (lahir di Marabahan, Kalimantan Selatan) adalah seorang pelajar, pemain <i>esports</i>, dan tokoh komunitas yang dikenal dengan julukan <b>"Elit Cees"</b> di kalangan generasi muda Kabupaten Barito Kuala. Julukan tersebut diberikan atas loyalitas, solidaritas, dan pengaruh positifnya, baik di dunia nyata maupun di dunia virtual.</p>
+
+                        <h2>Kehidupan awal dan pendidikan</h2>
+                        <p>Kevin menempuh pendidikan menengah kejuruan di <b>SMKN 1 Marabahan</b>, mengambil jurusan <b>TJKT</b> (Teknik Jaringan Komputer dan Telekomunikasi). Di lingkungan sekolah, ia dikenal sebagai siswa yang aktif dan mudah bergaul. Rekan-rekannya menyebut Kevin sebagai sosok yang selalu sigap membantu, baik dalam urusan akademik maupun kegiatan ekstrakurikuler.</p>
+
+                        <h2>Karier di Free Fire</h2>
+                        <p>Di dunia <i>esports</i>, terutama dalam game <b>Free Fire</b>, Kevin O'Conner menjelma sebagai <b>shot-caller</b> andalan. Ia dikenal karena kecerdasannya dalam membaca situasi pertempuran dan menyusun strategi yang tepat untuk timnya. Gaya permainannya yang tenang namun mematikan membuatnya disegani oleh kawan maupun lawan di server lokal.</p>
+
+                        <p>Bagi rekan-rekan satu timnya, Kevin adalah <b>rekan satu tim (cees)</b> yang paling diandalkan. Ia tidak pernah meninggalkan kawannya yang sedang terdesak di area pertempuran virtual—sebuah cerminan karakter setianya yang terbawa dari kehidupan sehari-hari ke dalam permainan.</p>
+
+                        <div class="quote-box">
+                            Kevin itu bukan cuma jago main, tapi dia selalu jaga teman. Di game pun dia tetap 'elit cees' sejati.
+                            <div class="source">salah satu rekan timnya</div>
+                        </div>
+
+                        <h2>ID dan media sosial</h2>
+                        <p>Kevin aktif membagikan momen-momen permainannya di TikTok melalui akun <a href="#" data-page="tiktok" class="nav-link">@kevinnnnn333</a>. Bagi para penggemar atau sesama pemain yang ingin bertanding atau sekadar berdiskusi, ID Free Fire Kevin adalah <span class="inline-id" id="inlineFfId">1133905337</span>.</p>
+
+                        <h2>Julukan "Elit Cees"</h2>
+                        <p>Istilah <b>"Elit Cees"</b> merupakan julukan kehormatan lokal yang disematkan kepada individu dengan loyalitas tinggi, solidaritas kuat, dan pengaruh positif. Kevin dianggap mewakili nilai-nilai tersebut, baik sebagai pelajar, teman, maupun sebagai pemain Free Fire. Di komunitasnya, ia menjadi panutan bagi generasi muda yang ingin menyeimbangkan prestasi akademik dan hobi di dunia digital.</p>
+
+                        <p>Dengan kepribadiannya yang ramah dan semangat juangnya yang tinggi, Kevin O'Conner terus menginspirasi banyak orang, tidak hanya di Barito Kuala, tetapi juga di komunitas Free Fire yang lebih luas.</p>
+
+                        <h2 style="margin-top:2rem;">Statistik permainan</h2>
+                        <table class="stat-table">
+                            <thead>
+                                <tr>
+                                    <th>Mode</th>
+                                    <th>Peran</th>
+                                    <th>Peringkat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Squad</td>
+                                    <td>Shot-caller / Support</td>
+                                    <td>Heroik</td>
+                                </tr>
+                                <tr>
+                                    <td>Duo</td>
+                                    <td>Fragger</td>
+                                    <td>Grandmaster</td>
+                                </tr>
+                                <tr>
+                                    <td>Solo</td>
+                                    <td>Rusher</td>
+                                    <td>Master</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+                <!-- REFERENSI -->
+                <div class="ref-footer">
+                    <div class="ref-header">
+                        <div><span class="badge">Pranala luar</span></div>
+                        <div><a href="#" data-page="tiktok" class="nav-link">TikTok Kevin O'Conner</a></div>
+                        <div>ID Free Fire: <span style="font-family:monospace; background:#f0f2f5; padding:0.1rem 0.5rem; border-radius:10px; border:1px solid #c8ccd1;">1133905337</span></div>
+                    </div>
+                    <ul class="ref-list">
+                        <li><a href="#" data-page="community-ff" class="nav-link">Komunitas Free Fire Kalimantan Selatan</a></li>
+                        <li><a href="#" data-page="smkn" class="nav-link">Profil SMKN 1 Marabahan</a></li>
+                        <li><a href="#" data-page="tournament" class="nav-link">Turnamen Free Fire Banjarmasin</a></li>
+                        <li><a href="#" data-page="esports" class="nav-link">Esports Indonesia</a></li>
+                    </ul>
+                    <div class="footer-license">
+                        <p>Halaman ini terakhir diubah pada 15 Juli 2026, pukul 14.30 WIB.</p>
+                        <p>Teks tersedia di bawah Lisensi Atribusi-BerbagiSerupa Creative Commons; ketentuan tambahan mungkin berlaku.</p>
+                    </div>
+                </div>
+
+            </div>
+            <!-- end tab-page -->
+
+            <!-- ============================================================
+            TAB: PEMBICARAAN (TALK)
+            ============================================================ -->
+            <div class="tab-content" id="tab-talk">
+
+                <h2 style="font-family:'Georgia',serif;font-weight:400;font-size:1.8rem;border-bottom:1px solid #a2a9b1;padding-bottom:0.15rem;margin-bottom:0.8rem;">
+                    Pembicaraan: Kevin O'Conner
+                </h2>
+
+                <p style="color:var(--w-gray);font-size:0.9rem;margin-bottom:1rem;">
+                    Halaman ini adalah tempat diskusi untuk mengembangkan artikel Kevin O'Conner.
+                    <span style="display:inline-block;background:#eaf3ff;padding:0.1rem 0.6rem;border-radius:10px;font-size:0.75rem;margin-left:0.5rem;">3 topik aktif</span>
+                </p>
+
+                <div class="discussion-list" id="discussionList">
+                    <div class="discussion-item">
+                        <div class="discussion-title" onclick="showToast('Membuka topik diskusi...')">
+                            &#128172; Penambahan statistik permainan
+                        </div>
+                        <div class="discussion-meta">
+                            <span>Oleh <strong>User:EsportsFan</strong></span>
+                            <span>14 Juli 2026</span>
+                            <span style="color:var(--w-green);">2 balasan</span>
+                        </div>
+                    </div>
+                    <div class="discussion-item">
+                        <div class="discussion-title" onclick="showToast('Membuka topik diskusi...')">
+                            &#128172; Sumber referensi untuk artikel
+                        </div>
+                        <div class="discussion-meta">
+                            <span>Oleh <strong>User:MarabahanLokal</strong></span>
+                            <span>13 Juli 2026</span>
+                            <span style="color:var(--w-green);">4 balasan</span>
+                        </div>
+                    </div>
+                    <div class="discussion-item">
+                        <div class="discussion-title" onclick="showToast('Membuka topik diskusi...')">
+                            &#128172; Usulan penambahan foto profil
+                        </div>
+                        <div class="discussion-meta">
+                            <span>Oleh <strong>User:AdminFF</strong></span>
+                            <span>12 Juli 2026</span>
+                            <span style="color:var(--w-orange);">1 balasan</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="discussion-form">
+                    <h3 style="font-weight:600;font-size:1rem;margin-bottom:0.5rem;">Tambahkan topik baru</h3>
+                    <label for="discussionTitle">Judul</label>
+                    <input type="text" id="discussionTitle" placeholder="Masukkan judul diskusi..." />
+
+                    <label for="discussionMessage">Pesan</label>
+                    <textarea id="discussionMessage" placeholder="Tulis pesan Anda di sini..."></textarea>
+
+                    <button class="btn btn-primary" onclick="addDiscussion()">Kirim topik</button>
+                    <span id="discussionFeedback" style="margin-left:0.8rem;font-size:0.85rem;color:var(--w-gray);"></span>
+                </div>
+
+                <div style="margin-top:0.8rem;font-size:0.8rem;color:var(--w-gray);">
+                    Halaman pembicaraan ini menggunakan format diskusi Wikipedia.
+                </div>
+
+            </div>
+            <!-- end tab-talk -->
+
+            <!-- ============================================================
+            TAB: BACA (READ)
+            ============================================================ -->
+            <div class="tab-content" id="tab-read">
+
+                <h2 style="font-family:'Georgia',serif;font-weight:400;font-size:1.8rem;border-bottom:1px solid #a2a9b1;padding-bottom:0.15rem;margin-bottom:0.8rem;">
+                    Mode Baca
+                </h2>
+
+                <div class="read-mode-indicator">
+                    <div class="read-stats">
+                        <span>&#128214; </span>
+                        <strong>Kevin O'Conner</strong> &middot;
+                        <span id="readWordCount">~1.200 kata</span> &middot;
+                        <span id="readTime">4 menit baca</span>
+                    </div>
+                    <div class="font-size-controls">
+                        <button onclick="changeFontSize(-2)" title="Perkecil teks">A-</button>
+                        <span class="font-size-display" id="fontSizeDisplay">100%</span>
+                        <button onclick="changeFontSize(2)" title="Perbesar teks">A+</button>
+                        <button onclick="resetFontSize()" title="Reset ukuran" style="font-size:0.7rem;width:auto;padding:0 0.5rem;">Reset</button>
+                    </div>
+                </div>
+
+                <div id="readContent" style="font-size:100%;transition:font-size 0.3s ease;">
+                    <div class="article-content">
+                        <p><b>Kevin O'Conner</b> (lahir di Marabahan, Kalimantan Selatan) adalah seorang pelajar, pemain <i>esports</i>, dan tokoh komunitas yang dikenal dengan julukan <b>"Elit Cees"</b> di kalangan generasi muda Kabupaten Barito Kuala. Julukan tersebut diberikan atas loyalitas, solidaritas, dan pengaruh positifnya, baik di dunia nyata maupun di dunia virtual.</p>
+
+                        <h2>Kehidupan awal dan pendidikan</h2>
+                        <p>Kevin menempuh pendidikan menengah kejuruan di <b>SMKN 1 Marabahan</b>, mengambil jurusan <b>TJKT</b> (Teknik Jaringan Komputer dan Telekomunikasi). Di lingkungan sekolah, ia dikenal sebagai siswa yang aktif dan mudah bergaul. Rekan-rekannya menyebut Kevin sebagai sosok yang selalu sigap membantu, baik dalam urusan akademik maupun kegiatan ekstrakurikuler.</p>
+
+                        <h2>Karier di Free Fire</h2>
+                        <p>Di dunia <i>esports</i>, terutama dalam game <b>Free Fire</b>, Kevin O'Conner menjelma sebagai <b>shot-caller</b> andalan. Ia dikenal karena kecerdasannya dalam membaca situasi pertempuran dan menyusun strategi yang tepat untuk timnya. Gaya permainannya yang tenang namun mematikan membuatnya disegani oleh kawan maupun lawan di server lokal.</p>
+
+                        <p>Bagi rekan-rekan satu timnya, Kevin adalah <b>rekan satu tim (cees)</b> yang paling diandalkan. Ia tidak pernah meninggalkan kawannya yang sedang terdesak di area pertempuran virtual—sebuah cerminan karakter setianya yang terbawa dari kehidupan sehari-hari ke dalam permainan.</p>
+
+                        <div class="quote-box">
+                            Kevin itu bukan cuma jago main, tapi dia selalu jaga teman. Di game pun dia tetap 'elit cees' sejati.
+                            <div class="source">salah satu rekan timnya</div>
+                        </div>
+
+                        <h2>ID dan media sosial</h2>
+                        <p>Kevin aktif membagikan momen-momen permainannya di TikTok melalui akun @kevinnnnn333. Bagi para penggemar atau sesama pemain yang ingin bertanding atau sekadar berdiskusi, ID Free Fire Kevin adalah <span class="inline-id">1133905337</span>.</p>
+
+                        <h2>Julukan "Elit Cees"</h2>
+                        <p>Istilah <b>"Elit Cees"</b> merupakan julukan kehormatan lokal yang disematkan kepada individu dengan loyalitas tinggi, solidaritas kuat, dan pengaruh positif. Kevin dianggap mewakili nilai-nilai tersebut, baik sebagai pelajar, teman, maupun sebagai pemain Free Fire. Di komunitasnya, ia menjadi panutan bagi generasi muda yang ingin menyeimbangkan prestasi akademik dan hobi di dunia digital.</p>
+
+                        <p>Dengan kepribadiannya yang ramah dan semangat juangnya yang tinggi, Kevin O'Conner terus menginspirasi banyak orang, tidak hanya di Barito Kuala, tetapi juga di komunitas Free Fire yang lebih luas.</p>
+                    </div>
+                </div>
+
+                <div style="margin-top:1rem;padding-top:0.8rem;border-top:1px solid #eaecf0;font-size:0.8rem;color:var(--w-gray);">
+                    <span>Mode baca &middot; Teks dapat diubah ukurannya dengan tombol A+ / A-</span>
+                </div>
+
+            </div>
+            <!-- end tab-read -->
+
+            <!-- ============================================================
+            TAB: SUNTING (EDIT)
+            ============================================================ -->
+            <div class="tab-content" id="tab-edit">
+
+                <h2 style="font-family:'Georgia',serif;font-weight:400;font-size:1.8rem;border-bottom:1px solid #a2a9b1;padding-bottom:0.15rem;margin-bottom:0.8rem;">
+                    Sunting artikel
+                </h2>
+
+                <p style="color:var(--w-gray);font-size:0.9rem;margin-bottom:0.8rem;">
+                    Anda sedang menyunting <strong>Kevin O'Conner</strong>. Perubahan akan terlihat setelah disimpan.
+                </p>
+
+                <div class="edit-toolbar">
+                    <button onclick="insertText('**', '**')" title="Tebal">B</button>
+                    <button onclick="insertText("''", "''")" title="Miring">I</button>
+                    <button onclick="insertText('== ', ' ==')" title="Heading 2">H2</button>
+                    <button onclick="insertText('=== ', ' ===')" title="Heading 3">H3</button>
+                    <button onclick="insertText('* ', '')" title="List">&#8226;</button>
+                    <button onclick="insertText('# ', '')" title="Numbered list">1.</button>
+                    <button onclick="insertText('[[' , ']]')" title="Internal link">Link</button>
+                    <button onclick="previewEdit()" style="background:var(--w-blue);color:#fff;border-color:var(--w-blue);">Pratinjau</button>
+                </div>
+
+                <div class="edit-area">
+                    <textarea id="editTextarea" rows="12">**Kevin O'Conner** (lahir di Marabahan, Kalimantan Selatan) adalah seorang pelajar, pemain ''esports'', dan tokoh komunitas yang dikenal dengan julukan **"Elit Cees"** di kalangan generasi muda Kabupaten Barito Kuala.
+
+== Kehidupan awal dan pendidikan ==
+Kevin menempuh pendidikan menengah kejuruan di '''SMKN 1 Marabahan''', mengambil jurusan '''TJKT''' (Teknik Jaringan Komputer dan Telekomunikasi).
+
+== Karier di Free Fire ==
+Di dunia ''esports'', terutama dalam game '''Free Fire''', Kevin O'Conner menjelma sebagai '''shot-caller''' andalan.
+
+== ID dan media sosial ==
+ID Free Fire Kevin adalah 1133905337.
+
+== Julukan "Elit Cees" ==
+Istilah '''"Elit Cees"''' merupakan julukan kehormatan lokal yang disematkan kepada individu dengan loyalitas tinggi.</textarea>
+                </div>
+
+                <div class="edit-preview" id="editPreview">
+                    <h4 style="font-weight:600;margin-bottom:0.5rem;color:var(--w-gray);">Pratinjau</h4>
+                    <div class="preview-content" id="previewContent"></div>
+                </div>
+
+                <div class="edit-success" id="editSuccess">
+                    &#10004; Artikel berhasil diperbarui!
+                </div>
+
+                <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-top:0.5rem;">
+                    <button class="btn btn-success" onclick="saveEdit()">Simpan perubahan</button>
+                    <button class="btn btn-primary" onclick="previewEdit()">Pratinjau</button>
+                    <button class="btn" style="background:#eaecf0;" onclick="resetEdit()">Batal</button>
+                    <span id="editFeedback" style="font-size:0.85rem;color:var(--w-gray);align-self:center;"></span>
+                </div>
+
+                <div style="margin-top:1rem;padding-top:0.8rem;border-top:1px solid #eaecf0;font-size:0.8rem;color:var(--w-gray);">
+                    <span>Gunakan format wiki untuk menyunting artikel.</span>
+                </div>
+
+            </div>
+            <!-- end tab-edit -->
+
+            <!-- ============================================================
+            TAB: RIWAYAT (HISTORY)
+            ============================================================ -->
+            <div class="tab-content" id="tab-history">
+
+                <h2 style="font-family:'Georgia',serif;font-weight:400;font-size:1.8rem;border-bottom:1px solid #a2a9b1;padding-bottom:0.15rem;margin-bottom:0.8rem;">
+                    Riwayat artikel
+                </h2>
+
+                <p style="color:var(--w-gray);font-size:0.9rem;margin-bottom:1rem;">
+                    Menampilkan 8 revisi terakhir dari artikel <strong>Kevin O'Conner</strong>.
+                    <span style="display:inline-block;background:#eaecf0;padding:0.1rem 0.6rem;border-radius:10px;font-size:0.75rem;margin-left:0.5rem;">Total 12 revisi</span>
+                </p>
+
+                <div class="history-list" id="historyList">
+                    <div class="history-item">
+                        <span class="history-version">#12</span>
+                        <span class="history-date">15 Jul 2026, 14:30</span>
+                        <span class="history-user"><a href="#">User:AdminFF</a></span>
+                        <span class="history-summary">Penambahan statistik permainan</span>
+                        <span class="history-size">+235 byte</span>
+                        <span class="history-action">
+                            <a href="#" onclick="showToast('Membandingkan versi...')">beda</a>
+                            <a href="#" onclick="showToast('Mengembalikan ke versi ini...')">kembalikan</a>
+                        </span>
+                    </div>
+                    <div class="history-item">
+                        <span class="history-version">#11</span>
+                        <span class="history-date">15 Jul 2026, 12:15</span>
+                        <span class="history-user"><a href="#">User:MarabahanLokal</a></span>
+                        <span class="history-summary">Perbaikan tata bahasa</span>
+                        <span class="history-size">-12 byte</span>
+                        <span class="history-action">
+                            <a href="#" onclick="showToast('Membandingkan versi...')">beda</a>
+                            <a href="#" onclick="showToast('Mengembalikan ke versi ini...')">kembalikan</a>
+                        </span>
+                    </div>
+                    <div class="history-item">
+                        <span class="history-version">#10</span>
+                        <span class="history-date">14 Jul 2026, 20:45</span>
+                        <span class="history-user"><a href="#">User:EsportsFan</a></span>
+                        <span class="history-summary">Penambahan informasi ID Free Fire</span>
+                        <span class="history-size">+89 byte</span>
+                        <span class="history-action">
+                            <a href="#" onclick="showToast('Membandingkan versi...')">beda</a>
+                            <a href="#" onclick="showToast('Mengembalikan ke versi ini...')">kembalikan</a>
+                        </span>
+                    </div>
+                    <div class="history-item">
+                        <span class="history-version">#9</span>
+                        <span class="history-date">14 Jul 2026, 16:20</span>
+                        <span class="history-user"><a href="#">User:KevinFans</a></span>
+                        <span class="history-summary">Penambahan kutipan dari rekan tim</span>
+                        <span class="history-size">+156 byte</span>
+                        <span class="history-action">
+                            <a href="#" onclick="showToast('Membandingkan versi...')">beda</a>
+                            <a href="#" onclick="showToast('Mengembalikan ke versi ini...')">kembalikan</a>
+                        </span>
+                    </div>
+                    <div class="history-item">
+                        <span class="history-version">#8</span>
+                        <span class="history-date">13 Jul 2026, 22:10</span>
+                        <span class="history-user"><a href="#">User:AdminFF</a></span>
+                        <span class="history-summary">Perbaikan format dan struktur</span>
+                        <span class="history-size">+45 byte</span>
+                        <span class="history-action">
+                            <a href="#" onclick="showToast('Membandingkan versi...')">beda</a>
+                            <a href="#" onclick="showToast('Mengembalikan ke versi ini...')">kembalikan</a>
+                        </span>
+                    </div>
+                    <div class="history-item">
+                        <span class="history-version">#7</span>
+                        <span class="history-date">13 Jul 2026, 18:30</span>
+                        <span class="history-user"><a href="#">User:MarabahanLokal</a></span>
+                        <span class="history-summary">Penambahan informasi pendidikan</span>
+                        <span class="history-size">+178 byte</span>
+                        <span class="history-action">
+                            <a href="#" onclick="showToast('Membandingkan versi...')">beda</a>
+                            <a href="#" onclick="showToast('Mengembalikan ke versi ini...')">kembalikan</a>
+                        </span>
+                    </div>
+                    <div class="history-item">
+                        <span class="history-version">#6</span>
+                        <span class="history-date">12 Jul 2026, 14:00</span>
+                        <span class="history-user"><a href="#">User:EsportsFan</a></span>
+                        <span class="history-summary">Perbaikan link dan referensi</span>
+                        <span class="history-size">-8 byte</span>
+                        <span class="history-action">
+                            <a href="#" onclick="showToast('Membandingkan versi...')">beda</a>
+                            <a href="#" onclick="showToast('Mengembalikan ke versi ini...')">kembalikan</a>
+                        </span>
+                    </div>
+                    <div class="history-item">
+                        <span class="history-version">#5</span>
+                        <span class="history-date">12 Jul 2026, 10:30</span>
+                        <span class="history-user"><a href="#">User:KevinFans</a></span>
+                        <span class="history-summary">Pembuatan artikel (versi awal)</span>
+                        <span class="history-size">+890 byte</span>
+                        <span class="history-action">
+                            <a href="#" onclick="showToast('Membandingkan versi...')">beda</a>
+                            <a href="#" onclick="showToast('Mengembalikan ke versi ini...')">kembalikan</a>
+                        </span>
+                    </div>
+                </div>
+
+                <div style="margin-top:0.8rem;display:flex;gap:0.8rem;flex-wrap:wrap;font-size:0.85rem;">
+                    <button class="btn" style="background:#eaecf0;" onclick="showToast('Memuat revisi lebih lama...')">&#8592; Revisi lebih lama</button>
+                    <span style="color:var(--w-gray);align-self:center;">Menampilkan 8 dari 12 revisi</span>
+                </div>
+
+                <div style="margin-top:1rem;padding-top:0.8rem;border-top:1px solid #eaecf0;font-size:0.8rem;color:var(--w-gray);">
+                    <span>Riwayat artikel Kevin O'Conner &middot; Daftar revisi lengkap</span>
+                </div>
+
+            </div>
+            <!-- end tab-history -->
+
+        </main>
+        <!-- end wiki-main -->
+    </div>
+    <!-- end wiki-container -->
+
+    <!-- ============================================================
+    JAVASCRIPT - SEMUA FITUR BERFUNGSI
+    ============================================================ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // ============================================================
+            // 1. LOADING OVERLAY
+            // ============================================================
+            setTimeout(function() {
+                const overlay = document.getElementById('loaderOverlay');
+                overlay.classList.add('hidden');
+                setTimeout(function() {
+                    overlay.style.display = 'none';
+                }, 1000);
+            }, 900);
+
+            window.addEventListener('load', function() {
+                setTimeout(function() {
+                    const overlay = document.getElementById('loaderOverlay');
+                    if (!overlay.classList.contains('hidden')) {
+                        overlay.classList.add('hidden');
+                        setTimeout(function() {
+                            overlay.style.display = 'none';
+                        }, 1000);
+                    }
+                }, 2000);
+            });
+
+            // ============================================================
+            // 2. ELEMEN REFERENSI
+            // ============================================================
+            const modalOverlay = document.getElementById('modalOverlay');
+            const modalBody = document.getElementById('modalBody');
+            const modalClose = document.getElementById('modalClose');
+            const toast = document.getElementById('toast');
+            const wikiMain = document.getElementById('wikiMain');
+            const wikiSidebar = document.getElementById('wikiSidebar');
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+
+            // ============================================================
+            // 3. DATA HALAMAN (MODAL)
+            // ============================================================
+            const pageData = {
+                'home': {
+                    title: 'Halaman Utama',
+                    content: `
+                        <h2>Selamat datang di Wikipedia</h2>
+                        <p>Wikipedia adalah ensiklopedia daring bebas yang dapat disunting oleh siapa saja. Halaman ini menyajikan informasi tentang Kevin O'Conner, seorang tokoh muda dari Kalimantan Selatan.</p>
+                        <p>Anda dapat menjelajahi berbagai artikel menarik lainnya melalui menu navigasi di samping.</p>
+                        <p><strong>Artikel saat ini:</strong> Kevin O'Conner</p>
+                        <div class="modal-meta">Halaman utama Wikipedia Indonesia</div>
+                    `
+                },
+                'changes': {
+                    title: 'Perubahan Terbaru',
+                    content: `
+                        <h2>Perubahan terbaru</h2>
+                        <p>Berikut adalah daftar perubahan terbaru pada artikel Kevin O'Conner:</p>
+                        <ul>
+                            <li><strong>15 Juli 2026:</strong> Penambahan bagian statistik permainan</li>
+                            <li><strong>14 Juli 2026:</strong> Pembaruan informasi ID Free Fire</li>
+                            <li><strong>13 Juli 2026:</strong> Artikel pertama kali dipublikasikan</li>
+                        </ul>
+                        <div class="modal-meta">Menampilkan 3 perubahan terakhir</div>
+                    `
+                },
+                'featured': {
+                    title: 'Artikel Pilihan',
+                    content: `
+                        <h2>Artikel Pilihan</h2>
+                        <p><strong>Kevin O'Conner</strong> — Artikel ini dipilih sebagai artikel pilihan karena menyajikan informasi lengkap tentang seorang tokoh muda inspiratif dari Kalimantan Selatan.</p>
+                        <p>Artikel ini mencakup:</p>
+                        <ul>
+                            <li>Kehidupan awal dan pendidikan</li>
+                            <li>Karier di Free Fire</li>
+                            <li>Julukan "Elit Cees"</li>
+                            <li>Statistik permainan</li>
+                        </ul>
+                        <div class="modal-meta">Artikel pilihan - 15 Juli 2026</div>
+                    `
+                },
+                'community': {
+                    title: 'Komunitas',
+                    content: `
+                        <h2>Komunitas Wikipedia</h2>
+                        <p>Komunitas Wikipedia Indonesia terdiri dari para sukarelawan yang bekerja sama untuk mengembangkan ensiklopedia bebas ini.</p>
+                        <p>Anda dapat bergabung dengan komunitas melalui:</p>
+                        <ul>
+                            <li>Warung Kopi — tempat diskusi</li>
+                            <li>Halaman pembicaraan — untuk berinteraksi dengan pengguna lain</li>
+                            <li>Proyek-proyek tematik — seperti Proyek Esports</li>
+                        </ul>
+                        <div class="modal-meta">Komunitas Wikipedia Indonesia</div>
+                    `
+                },
+                'kopi': {
+                    title: 'Warung Kopi',
+                    content: `
+                        <h2>Warung Kopi</h2>
+                        <p>Warung Kopi adalah tempat bagi para pengguna Wikipedia untuk berdiskusi tentang berbagai topik.</p>
+                        <p><strong>Diskusi terbaru:</strong></p>
+                        <ul>
+                            <li><strong>Topik 1:</strong> Pengembangan artikel tentang esports Indonesia</li>
+                            <li><strong>Topik 2:</strong> Saran untuk artikel Kevin O'Conner</li>
+                            <li><strong>Topik 3:</strong> Kolaborasi dengan komunitas Free Fire</li>
+                        </ul>
+                        <div class="modal-meta">Warung Kopi - Pusat diskusi</div>
+                    `
+                },
+                'search': {
+                    title: 'Cari',
+                    content: `
+                        <h2>Pencarian</h2>
+                        <p>Fitur pencarian memungkinkan Anda menemukan artikel di Wikipedia.</p>
+                        <p><strong>Hasil pencarian untuk "Kevin O'Conner":</strong></p>
+                        <ul>
+                            <li><a href="#" onclick="closeModal();showToast('Kembali ke artikel utama');document.querySelector('[data-tab=\\'page\\']').click();">Kevin O'Conner</a> — Artikel utama</li>
+                            <li><a href="#" data-page="community-ff" class="nav-link">Komunitas Free Fire Kalimantan Selatan</a></li>
+                            <li><a href="#" data-page="tournament" class="nav-link">Turnamen Free Fire Banjarmasin</a></li>
+                        </ul>
+                        <div class="modal-meta">Hasil pencarian untuk "Kevin O'Conner"</div>
+                    `
+                },
+                'backlinks': {
+                    title: 'Pranala Balik',
+                    content: `
+                        <h2>Pranala Balik</h2>
+                        <p>Halaman-halaman yang memiliki pranala ke artikel Kevin O'Conner:</p>
+                        <ul>
+                            <li><a href="#" data-page="community-ff" class="nav-link">Komunitas Free Fire Kalimantan Selatan</a></li>
+                            <li><a href="#" data-page="esports" class="nav-link">Esports Indonesia</a></li>
+                            <li><a href="#" data-page="smkn" class="nav-link">SMKN 1 Marabahan</a></li>
+                        </ul>
+                        <div class="modal-meta">3 halaman memiliki pranala ke artikel ini</div>
+                    `
+                },
+                'related': {
+                    title: 'Perubahan Terkait',
+                    content: `
+                        <h2>Perubahan Terkait</h2>
+                        <p>Artikel-artikel yang terkait dengan Kevin O'Conner:</p>
+                        <ul>
+                            <li><a href="#" data-page="community-ff" class="nav-link">Komunitas Free Fire Kalimantan Selatan</a> — perubahan terakhir: 14 Juli 2026</li>
+                            <li><a href="#" data-page="tournament" class="nav-link">Turnamen Free Fire Banjarmasin</a> — perubahan terakhir: 13 Juli 2026</li>
+                            <li><a href="#" data-page="esports" class="nav-link">Esports Indonesia</a> — perubahan terakhir: 12 Juli 2026</li>
+                        </ul>
+                        <div class="modal-meta">Perubahan terkait dengan artikel Kevin O'Conner</div>
+                    `
+                },
+                'special': {
+                    title: 'Halaman Istimewa',
+                    content: `
+                        <h2>Halaman Istimewa</h2>
+                        <p>Kumpulan halaman istimewa di Wikipedia:</p>
+                        <ul>
+                            <li><a href="#" onclick="closeModal();showToast('Kembali ke artikel utama');document.querySelector('[data-tab=\\'page\\']').click();">Halaman utama</a></li>
+                            <li><a href="#" data-page="featured" class="nav-link">Artikel pilihan</a></li>
+                            <li><a href="#" data-page="changes" class="nav-link">Perubahan terbaru</a></li>
+                        </ul>
+                        <div class="modal-meta">Halaman istimewa Wikipedia</div>
+                    `
+                },
+                'print': {
+                    title: 'Versi Cetak',
+                    content: `
+                        <h2>Versi Cetak</h2>
+                        <p>Artikel Kevin O'Conner dalam format cetak.</p>
+                        <p><strong>Judul:</strong> Kevin O'Conner</p>
+                        <p><strong>Tanggal:</strong> 15 Juli 2026</p>
+                        <p><strong>Lisensi:</strong> Creative Commons Atribusi-BerbagiSerupa</p>
+                        <p style="font-size:0.85rem; color:#54595d; margin-top:0.5rem;">Halaman ini dioptimalkan untuk pencetakan.</p>
+                        <div class="modal-meta">Versi cetak artikel Kevin O'Conner</div>
+                    `
+                },
+                'id': {
+                    title: 'Bahasa Indonesia',
+                    content: `
+                        <h2>Bahasa Indonesia</h2>
+                        <p>Wikipedia bahasa Indonesia adalah edisi Wikipedia dalam bahasa Indonesia.</p>
+                        <p><strong>Statistik:</strong></p>
+                        <ul>
+                            <li>Jumlah artikel: 650.000+</li>
+                            <li>Pengguna terdaftar: 3 juta+</li>
+                            <li>Artikel aktif: Kevin O'Conner</li>
+                        </ul>
+                        <div class="modal-meta">Wikipedia bahasa Indonesia</div>
+                    `
+                },
+                'en': {
+                    title: 'English',
+                    content: `
+                        <h2>English Wikipedia</h2>
+                        <p>The English Wikipedia is the largest edition of Wikipedia.</p>
+                        <p><strong>Statistics:</strong></p>
+                        <ul>
+                            <li>Articles: 6.8 million+</li>
+                            <li>Registered users: 47 million+</li>
+                            <li>Featured article: Kevin O'Conner (Indonesian gamer)</li>
+                        </ul>
+                        <div class="modal-meta">English Wikipedia</div>
+                    `
+                },
+                'tiktok': {
+                    title: 'TikTok Kevin O\'Conner',
+                    content: `
+                        <h2>TikTok @kevinnnnn333</h2>
+                        <p>Kevin O'Conner aktif berbagi konten Free Fire di TikTok.</p>
+                        <p><strong>Akun:</strong> @kevinnnnn333</p>
+                        <p><strong>Konten:</strong></p>
+                        <ul>
+                            <li>Highlight pertandingan Free Fire</li>
+                            <li>Tips dan trik bermain</li>
+                            <li>Momen bersama tim</li>
+                            <li>Behind the scene latihan</li>
+                        </ul>
+                        <p><a href="https://tiktok.com/@kevinnnnn333" target="_blank" style="color:#0645ad;">Kunjungi TikTok @kevinnnnn333</a></p>
+                        <div class="modal-meta">Media sosial Kevin O'Conner</div>
+                    `
+                },
+                'community-ff': {
+                    title: 'Komunitas Free Fire Kalimantan Selatan',
+                    content: `
+                        <h2>Komunitas Free Fire Kalimantan Selatan</h2>
+                        <p>Komunitas Free Fire di Kalimantan Selatan adalah wadah bagi para pemain Free Fire di wilayah tersebut.</p>
+                        <p><strong>Aktivitas:</strong></p>
+                        <ul>
+                            <li>Turnamen rutin setiap bulan</li>
+                            <li>Latihan bersama dengan tim elit</li>
+                            <li>Diskusi strategi dan meta</li>
+                            <li>Kevin O'Conner adalah salah satu anggota aktif</li>
+                        </ul>
+                        <div class="modal-meta">Komunitas Free Fire Kalsel</div>
+                    `
+                },
+                'smkn': {
+                    title: 'SMKN 1 Marabahan',
+                    content: `
+                        <h2>SMKN 1 Marabahan</h2>
+                        <p>SMKN 1 Marabahan adalah sekolah menengah kejuruan di Marabahan, Barito Kuala, Kalimantan Selatan.</p>
+                        <p><strong>Jurusan:</strong></p>
+                        <ul>
+                            <li>TJKT (Teknik Jaringan Komputer dan Telekomunikasi) — diambil oleh Kevin</li>
+                            <li>Teknik Kendaraan Ringan</li>
+                            <li>Akuntansi</li>
+                            <li>Multimedia</li>
+                        </ul>
+                        <div class="modal-meta">SMKN 1 Marabahan</div>
+                    `
+                },
+                'tournament': {
+                    title: 'Turnamen Free Fire Banjarmasin',
+                    content: `
+                        <h2>Turnamen Free Fire Banjarmasin</h2>
+                        <p>Turnamen Free Fire di Banjarmasin menjadi ajang bergengsi bagi para pemain di Kalimantan Selatan.</p>
+                        <p><strong>Info turnamen:</strong></p>
+                        <ul>
+                            <li>Hadiah total: Rp 10.000.000</li>
+                            <li>Diikuti oleh 64 tim</li>
+                            <li>Kevin O'Conner berhasil membawa timnya ke babak final</li>
+                            <li>Peringkat: Juara 2</li>
+                        </ul>
+                        <div class="modal-meta">Turnamen Free Fire Banjarmasin</div>
+                    `
+                },
+                'esports': {
+                    title: 'Esports Indonesia',
+                    content: `
+                        <h2>Esports Indonesia</h2>
+                        <p>Esports Indonesia adalah ekosistem olahraga elektronik di Indonesia yang terus berkembang.</p>
+                        <p><strong>Game populer:</strong></p>
+                        <ul>
+                            <li>Free Fire — dengan jutaan pemain aktif</li>
+                            <li>Mobile Legends</li>
+                            <li>PUBG Mobile</li>
+                            <li>Valorant</li>
+                        </ul>
+                        <p>Kevin O'Conner adalah salah satu pemain Free Fire yang mencuri perhatian di kancah lokal.</p>
+                        <div class="modal-meta">Esports Indonesia</div>
+                    `
+                }
+            };
+
+            // ============================================================
+            // 4. TOAST NOTIFICATION
+            // ============================================================
+            let toastTimeout;
+
+            window.showToast = function(message) {
+                toast.textContent = message;
+                toast.classList.add('show');
+                clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(function() {
+                    toast.classList.remove('show');
+                }, 2500);
+            };
+
+            // ============================================================
+            // 5. MODAL FUNCTIONS
+            // ============================================================
+            function openModal(pageKey) {
+                const data = pageData[pageKey];
+                if (!data) {
+                    showToast('Halaman tidak ditemukan');
+                    return;
+                }
+
+                modalBody.innerHTML = data.content;
+                document.getElementById('modalContent').scrollTop = 0;
+                modalOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                modalBody.querySelectorAll('.nav-link').forEach(function(link) {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const targetPage = this.getAttribute('data-page');
+                        if (targetPage && pageData[targetPage]) {
+                            openModal(targetPage);
+                        } else {
+                            showToast('Halaman sedang dalam pengembangan');
+                        }
+                    });
+                });
+
+                showToast('Membuka: ' + data.title);
+            }
+
+            function closeModal() {
+                modalOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            // ============================================================
+            // 6. NAVIGASI SIDEBAR
+            // ============================================================
+            document.querySelectorAll('.nav-link').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.getAttribute('data-page');
+
+                    if (page && pageData[page]) {
+                        openModal(page);
+                    } else {
+                        showToast('Halaman sedang dalam pengembangan');
+                    }
+                });
+            });
+
+            // ============================================================
+            // 7. TAB SYSTEM - SEMUA TAB BERFUNGSI
+            // ============================================================
+            const tabTriggers = document.querySelectorAll('.tab-trigger');
+            const tabContents = {
+                'page': document.getElementById('tab-page'),
+                'talk': document.getElementById('tab-talk'),
+                'read': document.getElementById('tab-read'),
+                'edit': document.getElementById('tab-edit'),
+                'history': document.getElementById('tab-history')
+            };
+
+            // Tab page aktif secara default
+            let currentTab = 'page';
+
+            tabTriggers.forEach(function(trigger) {
+                trigger.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const tabName = this.getAttribute('data-tab');
+
+                    // Update active tab
+                    document.querySelectorAll('.tab-trigger').forEach(function(t) {
+                        t.classList.remove('active');
+                    });
+                    this.classList.add('active');
+
+                    // Sembunyikan semua tab content
+                    Object.keys(tabContents).forEach(function(key) {
+                        tabContents[key].classList.remove('active');
+                    });
+
+                    // Tampilkan tab yang dipilih
+                    if (tabContents[tabName]) {
+                        tabContents[tabName].classList.add('active');
+                        currentTab = tabName;
+                        showToast('Membuka: ' + this.textContent.trim().replace(/\s+\d+$/, ''));
+                    }
+                });
+            });
+
+            // ============================================================
+            // 8. FUNGSI PEMBICARAAN (TALK)
+            // ============================================================
+            window.addDiscussion = function() {
+                const title = document.getElementById('discussionTitle');
+                const message = document.getElementById('discussionMessage');
+                const feedback = document.getElementById('discussionFeedback');
+
+                if (title.value.trim() === '' || message.value.trim() === '') {
+                    feedback.textContent = 'Judul dan pesan harus diisi!';
+                    feedback.style.color = 'var(--w-red)';
+                    return;
+                }
+
+                const list = document.getElementById('discussionList');
+                const newItem = document.createElement('div');
+                newItem.className = 'discussion-item';
+                newItem.innerHTML = `
+                    <div class="discussion-title" onclick="showToast('Membuka topik diskusi...')">
+                        &#128172; ${title.value.trim()}
+                    </div>
+                    <div class="discussion-meta">
+                        <span>Oleh <strong>User:Anda</strong></span>
+                        <span>${new Date().toLocaleDateString('id-ID', {day:'numeric',month:'short',year:'numeric'})}</span>
+                        <span style="color:var(--w-green);">0 balasan</span>
+                    </div>
+                `;
+                list.prepend(newItem);
+
+                title.value = '';
+                message.value = '';
+                feedback.textContent = 'Topik berhasil ditambahkan!';
+                feedback.style.color = 'var(--w-green)';
+                showToast('Topik diskusi baru ditambahkan');
+
+                setTimeout(function() {
+                    feedback.textContent = '';
+                }, 3000);
+            };
+
+            // ============================================================
+            // 9. FUNGSI BACA (READ) - FONT SIZE
+            // ============================================================
+            let currentFontSize = 100;
+
+            window.changeFontSize = function(change) {
+                currentFontSize = Math.min(150, Math.max(70, currentFontSize + change));
+                document.getElementById('readContent').style.fontSize = currentFontSize + '%';
+                document.getElementById('fontSizeDisplay').textContent = currentFontSize + '%';
+                showToast('Ukuran teks: ' + currentFontSize + '%');
+            };
+
+            window.resetFontSize = function() {
+                currentFontSize = 100;
+                document.getElementById('readContent').style.fontSize = '100%';
+                document.getElementById('fontSizeDisplay').textContent = '100%';
+                showToast('Ukuran teks direset');
+            };
+
+            // ============================================================
+            // 10. FUNGSI SUNTING (EDIT)
+            // ============================================================
+            const editTextarea = document.getElementById('editTextarea');
+            const previewContent = document.getElementById('previewContent');
+            const editPreview = document.getElementById('editPreview');
+            const editSuccess = document.getElementById('editSuccess');
+            const editFeedback = document.getElementById('editFeedback');
+
+            window.insertText = function(openTag, closeTag) {
+                const start = editTextarea.selectionStart;
+                const end = editTextarea.selectionEnd;
+                const text = editTextarea.value;
+                const selectedText = text.substring(start, end);
+
+                let newText;
+                if (selectedText) {
+                    newText = text.substring(0, start) + openTag + selectedText + closeTag + text.substring(end);
+                } else {
+                    newText = text.substring(0, start) + openTag + text.substring(start);
+                }
+
+                editTextarea.value = newText;
+                editTextarea.focus();
+                showToast('Format diterapkan');
+            };
+
+            window.previewEdit = function() {
+                const content = editTextarea.value;
+                // Simple markdown-like preview
+                let html = content
+                    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+                    .replace(/''(.*?)''/g, '<i>$1</i>')
+                    .replace(/=== (.*?) ===/g, '<h3>$1</h3>')
+                    .replace(/== (.*?) ==/g, '<h2>$1</h2>')
+                    .replace(/\n/g, '<br>');
+
+                previewContent.innerHTML = html;
+                editPreview.classList.add('active');
+                showToast('Pratinjau ditampilkan');
+            };
+
+            window.saveEdit = function() {
+                const content = editTextarea.value.trim();
+                if (content.length < 10) {
+                    editFeedback.textContent = 'Konten terlalu pendek!';
+                    editFeedback.style.color = 'var(--w-red)';
+                    return;
+                }
+
+                editSuccess.classList.add('show');
+                editFeedback.textContent = 'Artikel berhasil diperbarui!';
+                editFeedback.style.color = 'var(--w-green)';
+                showToast('Artikel berhasil disimpan!');
+
+                // Update konten utama dengan teks dari editor
+                const articleContent = document.getElementById('articleContent');
+                // Simpan perubahan ke konten utama (simulasi)
+                const newContent = content
+                    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+                    .replace(/''(.*?)''/g, '<i>$1</i>')
+                    .replace(/=== (.*?) ===/g, '<h3>$1</h3>')
+                    .replace(/== (.*?) ==/g, '<h2>$1</h2>')
+                    .replace(/\n/g, '<br>');
+
+                // Simpan ke localStorage sebagai cache
+                localStorage.setItem('wiki_edit_content', content);
+
+                setTimeout(function() {
+                    editSuccess.classList.remove('show');
+                    editFeedback.textContent = '';
+                }, 4000);
+            };
+
+            window.resetEdit = function() {
+                if (confirm('Batalkan perubahan?')) {
+                    editTextarea.value = localStorage.getItem('wiki_edit_content') ||
+                        `**Kevin O'Conner** (lahir di Marabahan, Kalimantan Selatan) adalah seorang pelajar, pemain ''esports'', dan tokoh komunitas yang dikenal dengan julukan **"Elit Cees"** di kalangan generasi muda Kabupaten Barito Kuala.
+
+== Kehidupan awal dan pendidikan ==
+Kevin menempuh pendidikan menengah kejuruan di '''SMKN 1 Marabahan''', mengambil jurusan '''TJKT''' (Teknik Jaringan Komputer dan Telekomunikasi).
+
+== Karier di Free Fire ==
+Di dunia ''esports'', terutama dalam game '''Free Fire''', Kevin O'Conner menjelma sebagai '''shot-caller''' andalan.
+
+== ID dan media sosial ==
+ID Free Fire Kevin adalah 1133905337.
+
+== Julukan "Elit Cees" ==
+Istilah '''"Elit Cees"''' merupakan julukan kehormatan lokal yang disematkan kepada individu dengan loyalitas tinggi.`;
+                    editPreview.classList.remove('active');
+                    showToast('Perubahan dibatalkan');
+                }
+            };
+
+            // ============================================================
+            // 11. FUNGSI COPY ID FREE FIRE
+            // ============================================================
+            const ffIdElements = document.querySelectorAll('.id-ff, .inline-id');
+            ffIdElements.forEach(function(el) {
+                el.addEventListener('click', function() {
+                    const id = this.textContent.trim();
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(id).then(function() {
+                            showToast('ID Free Fire ' + id + ' telah disalin');
+                        }).catch(function() {
+                            copyTextFallback(id);
+                        });
+                    } else {
+                        copyTextFallback(id);
+                    }
+                });
+                el.style.cursor = 'pointer';
+                el.title = 'Klik untuk menyalin ID';
+            });
+
+            function copyTextFallback(text) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('ID Free Fire ' + text + ' telah disalin');
+                } catch (err) {
+                    showToast('Gagal menyalin ID');
+                }
+                document.body.removeChild(textarea);
+            }
+
+            // ============================================================
+            // 12. MODAL CLOSE
+            // ============================================================
+            modalClose.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+                    closeModal();
+                }
+            });
+
+            // ============================================================
+            // 13. MOBILE MENU
+            // ============================================================
+            let mobileMenuOpen = false;
+
+            mobileMenuToggle.addEventListener('click', function() {
+                mobileMenuOpen = !mobileMenuOpen;
+                wikiSidebar.classList.toggle('mobile-open');
+                this.textContent = mobileMenuOpen ? '\u2715 Tutup' : '\u2630 Menu';
+            });
+
+            document.querySelectorAll('.nav-link').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 900) {
+                        wikiSidebar.classList.remove('mobile-open');
+                        mobileMenuOpen = false;
+                        mobileMenuToggle.textContent = '\u2630 Menu';
+                    }
+                });
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 900 && mobileMenuOpen) {
+                    wikiSidebar.classList.remove('mobile-open');
+                    mobileMenuOpen = false;
+                    mobileMenuToggle.textContent = '\u2630 Menu';
+                }
+            });
+
+            // ============================================================
+            // 14. RESTORE EDITOR CONTENT
+            // ============================================================
+            const savedContent = localStorage.getItem('wiki_edit_content');
+            if (savedContent) {
+                editTextarea.value = savedContent;
+            }
+
+            console.log('Wikipedia Kevin O\'Conner — Semua fitur berfungsi!');
+            console.log('ID Free Fire: 1133905337');
+            console.log('TikTok: @kevinnnnn333');
+
+        });
+    </script>
+
+</body>
+</html>
